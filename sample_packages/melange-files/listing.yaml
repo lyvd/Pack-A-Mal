@@ -1,0 +1,39 @@
+package:
+  name: listing
+  version: 0.1
+  epoch: 0
+  description: "listing"
+  copyright:
+    - license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - gcc
+      - make
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - gcc
+      - make
+      - wolfi-base
+
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/pakaremon/listing
+      tag: ${{package.version}}
+      expected-commit: 6eca4d08f0016f59872c2ef5c08d348f8659623e
+
+  - runs: |
+      cd listing
+      make listing
+      mkdir -p ${{targets.contextdir}}/usr/local/bin/
+      mv listing ${{targets.contextdir}}/usr/local/bin/

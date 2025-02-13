@@ -1,0 +1,39 @@
+package:
+  name: socket
+  version: 0.1
+  epoch: 0
+  description: "socket"
+  copyright:
+    - license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - gcc
+      - make
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - gcc
+      - make
+      - wolfi-base
+
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/pakaremon/socket
+      tag: ${{package.version}}
+      expected-commit: be7a8f2e864afbdc6fd9317cf8a9885b06918d51
+
+  - runs: |
+      cd socket
+      make socket
+      mkdir -p ${{targets.contextdir}}/usr/local/bin/
+      mv socket ${{targets.contextdir}}/usr/local/bin/

@@ -1,0 +1,39 @@
+package:
+  name: helloworld
+  version: 0.0.1
+  epoch: 0
+  description: "helloworld"
+  copyright:
+    - license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - gcc
+      - make
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - gcc
+      - make
+      - wolfi-base
+
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/pakaremon/helloworld 
+      tag: ${{package.version}}
+      expected-commit: 9db7787de64ec5b1220d419f08982dadef48afef
+
+  - runs: |
+      cd helloworld
+      make helloworld
+      mkdir -p ${{targets.contextdir}}/usr/local/bin/
+      mv helloworld ${{targets.contextdir}}/usr/local/bin/

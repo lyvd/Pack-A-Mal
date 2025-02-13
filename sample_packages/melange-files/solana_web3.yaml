@@ -1,0 +1,39 @@
+package:
+  name:  solana-web3.js
+  version: 1.95.9
+  epoch: 0
+  description: An AST-based pattern checker for JavaScript
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - nodejs
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - nodejs
+      - npm
+      - rsync
+      - wolfi-base
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/pakaremon/solana-web3.js
+      tag: ${{package.version}}
+      expected-commit: cf4bfc4b5f3703d1c3603c0d934b291691cbc672
+
+  - runs: |
+      npm install
+      mkdir -p ${{targets.destdir}}/usr/local/lib/node_modules/solana-web3.js
+      rsync -av --exclude='solana-web3.js.yaml' --exclude='node_modules' /home/build/* ${{targets.destdir}}/usr/local/lib/node_modules/solana-web3.js
+      rsync -av /home/build/node_modules/* ${{targets.destdir}}/usr/local/lib/node_modules
+  - uses: strip
