@@ -65,4 +65,7 @@ package-analysis, does not indicate whether a package is malicious. Users of the
 - [ ] Support Java packages
 - [ ] Support Windows-based packages
 
+# Contributors
+- Ly Vu [Linkedin Profile](https://www.linkedin.com/in/ly-vu-865b5819b/), [Github](https://github.com/lyvd), [Personal Website](https://www.lyvu.dev/)
+- Cong Nguyen [Linkedin Profile](https://www.linkedin.com/in/cong-nguyen14/), [Github](https://github.com/pakaremon),
 
