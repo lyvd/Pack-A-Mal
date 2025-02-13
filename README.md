@@ -11,7 +11,7 @@ This repository aims to improve [package-analysis](https://github.com/ossf/packa
 The figure above shows the dashboard web interface for advanced package analysis. There are two options: the user can upload a file sample for analysis, or The user can also enter a package name and package ecosystem for dynamic analysis.
 
 # Multi-language support
-_package_analysis currently only supports packages from npm, PyPi, RubyGems, Packagist, and Crates.io repositories, we aim to extend this to cover Rust packages from Crates.io and Java packages from Maven Central.
+_package_analysis currently only supports packages from npm, PyPi, RubyGems, Packagist, and Crates.io repositories, we aim to extend this to  Java packages from Maven Central.
 
 # Windows support
 _package-analysis_ currently supports only a Linux sandbox. We aim to extend its capability to support the Windows environment. This will require developing a Windows kernel and its utilities.
@@ -61,7 +61,7 @@ package-analysis, does not indicate whether a package is malicious. Users of the
 - [x] Design a UI (completed)
 - [x] Support Wofi APKs
 - [ ] Implement service simulation module
-- [ ] Support Rust packages
+<!-- - [ ] Support Rust packages -->
 - [ ] Support Java packages
 - [ ] Support Windows-based packages
 
