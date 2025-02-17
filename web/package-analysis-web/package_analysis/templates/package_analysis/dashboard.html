@@ -131,7 +131,10 @@
 
             // information package_name, package_version, ecosystem display for id reports
             var reports = document.getElementById("reports");
-            reports.innerHTML = `Package Name: <b> ${report_data.packages.package_name || "N/A"}</b> Package Version: <b>${report_data.packages.package_version || "N/A"}</b> Ecosystem: <b>${report_data.packages.ecosystem || "N/A"}</b>`;
+            reports.innerHTML = `Package Name: <b>${report_data.packages.package_name || "N/A"}</b> 
+                                 Package Version: <b>${report_data.packages.package_version || "N/A"}</b> 
+                                 Ecosystem: <b>${report_data.packages.ecosystem || "N/A"}</b> 
+                                 Time: <b>${(report_data.time || 0).toFixed(2)}</b> (seconds)`;
         }
     });
 

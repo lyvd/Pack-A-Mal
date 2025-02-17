@@ -3,6 +3,7 @@ import tempfile
 import subprocess
 import json
 import os
+import time
 
 
 class Helper:
@@ -115,14 +116,17 @@ class Helper:
             command = f"wsl {script_path} -package {package_name} -version {package_version}  -mode dynamic -nopull"
 
         try:
+            start_time = time.time()
             result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+            end_time = time.time()
+            elapsed_time = (end_time - start_time) 
             print(result.stdout)
 
-            json_file_path = os.path.join("/tmp/results/" ,  package_version + ".json")
+            json_file_path = os.path.join("/tmp/results/", package_version + ".json")
             read_command = f"wsl cat {json_file_path}"
             json_result = subprocess.run(read_command, shell=True,
-                                        check=True, capture_output=True,
-                                        text=True, encoding='utf-8')
+                                         check=True, capture_output=True,
+                                         text=True, encoding='utf-8')
             json_data = json.loads(json_result.stdout)
             reports = Report.generate_report(json_data)
             
@@ -131,9 +135,10 @@ class Helper:
                 'package_version': package_version,
                 'ecosystem': ecosystem,
             }
+            reports['time'] = elapsed_time
             # example of the reports to test the frontend
             # reports = {
-
+            #    'time': 0.0,
             #     'packages': {
             #         'package_name': "curl",
             #         'package_version': "7.77.0",
