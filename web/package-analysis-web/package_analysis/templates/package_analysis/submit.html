@@ -1,0 +1,96 @@
+{% extends "package_analysis/layout.html" %}
+
+{% block body %}
+<main class="flex-grid">
+    <header class="flex-grid__header">
+        <ul class="breadcrumbs">
+            <li class="active"><a href="{% url 'submit' %}">submit file</a></li>
+            <li class="todo"><a href="{% url 'configure' %}">configure</a></li>
+            <li class="todo"><a href="{% url 'analyze' %}">analyze</a></li>
+        </ul>
+        <h3>
+            <i class="fa fa-upload"></i> Submit a file
+        </h3>
+    </header>
+    <section class="flex-grid__body--center background-grey" id="analysis-configuration">
+        <div class="flex-grid__align-horizontal upload-module">
+            <div class="upload-module__container">
+                <h3>Submit a file via:</h3>
+                <nav id="tab-nav" class="grouped-buttons" role="tablist">
+                    <a class="active" data-toggle="tab" href="#tab-upload">File upload</a>
+                    <a data-toggle="tab" href="#tab-hash">Package name</a>
+                </nav>
+                <div class="tab-content">
+                    <div class="tab-pane upload-module__body active" role="tabpanel" id="tab-upload">
+                        <div class="upload-module__body--left">
+                            <div id="dndsubmit">
+                                <div class="dndupload__v2" id="dndupload">
+                                    <form id="uploader" action="/submit/api/presubmit" method="POST" enctype="multipart/form-data">
+                                        <div id="container">
+                                            <input type="file" name="files[]" id="file" class="holder_input" data-multiple-caption="{count} files selected" multiple="">
+                                            <label for="file" id="info">
+                                                <span class="text-idle">
+                                                    <strong>Drag your file here or <em>click to select a file.</em></strong>
+                                                </span>
+                                                <span class="text-hovering">
+                                                    <strong>Drop your file here.</strong>
+                                                </span>
+                                                <span class="text-dropped">
+                                                    <strong>One moment, we're uploading!</strong>
+                                                    <small>You'll be redirected automatically after we're done.</small>
+                                                </span>
+                                                <span class="text-done">
+                                                    <strong>All good!</strong>
+                                                    <small>One second while we redirect you.</small>
+                                                </span>
+                                                <span class="text-error">
+                                                    <strong>Something went wrong!</strong>
+                                                    <small>The server returned an error. Please check our file compatibility list with the file you're trying to upload or try again.</small>
+                                                    <small>If the problem persists, send us a feedback report.</small>
+                                                </span> 
+                                            </label>
+                                            <button type="submit" class="holder_button">Upload</button>
+                                            <progress id="uploadprogress" min="0" max="100" value="0">0</progress>
+                                        </div>
+                                    </form>
+                                    <div class="alternate-progress"></div>
+                                </div>
+                                <p id="filereader" class="hidden">File API &amp; FileReader API not supported</p>
+                                <p id="progress" class="hidden">XHR2's upload progress isn't supported</p>
+                                <p id="progress" class="hidden">XHR2's upload progress isn't supported</p>
+                            </div>
+                        </div>
+                        <div class="upload-module__body--right">
+                            <div class="allowed-file-types">
+                                <h4>Supported file types:</h4>
+                                <table align="center">
+                                    <tbody>
+                                        <tr>
+                                            <td>ZIP</td>
+                                            <td><i class="fa fa-file-archive"></i></td>
+                                        </tr>
+                                        <tr>
+                                            <td>APK</td>
+                                            <td><i class="fa fa-file"></i></td>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="tab-hash">
+                        <!-- <h1>Submit Package</h1> -->
+                        <form method="post" action="{% url 'submit' %}">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

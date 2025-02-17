@@ -1,0 +1,40 @@
+    /* suggestions suggestion styles */
+
+    .suggestions {
+        position: absolute;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-top: none;
+        background: white;
+        max-height: 150px;
+        overflow-y: scroll;
+        display: none;
+        z-index: 1000;
+    }
+
+    .suggestions div {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .suggestions div:hover {
+        background: #f0f0f0;
+    }
+
+    body.night .suggestions {
+        background: #333;
+        color: white;
+    }
+
+    body.night .suggestions div:hover {
+        background: #555;
+    }
+
+    body.cyborg .suggestions {
+        background: #222;
+        color: #ccc;
+    }
+
+    body.cyborg .suggestions div:hover {
+        background: #444;
+    }

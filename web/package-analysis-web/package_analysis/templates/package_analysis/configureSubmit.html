@@ -1,0 +1,269 @@
+{% extends "package_analysis/layout.html" %}
+{% block body %}
+        <main class="flex-grid" id="analysis-configuration">
+            <header class="flex-grid__header">
+                <ul class="breadcrumbs">
+                    <li class="done"><a href="{% url 'submit' %}">submit file</a></li>
+                    <li class="active"><a href="{% url 'configure' %}">configure</a></li>
+                    <li class="todo"><a href="{% url 'analyze' %}">analyze</a></li>
+                </ul>
+                <h3>
+                    <i class="fa fa-cogs"></i> Configure your Analysis
+                    <div class="pull-right">
+                        <button class="grey" id="reset-options"><i class="fa fa-refresh"></i> Reset</button>
+                        <button id="start-analysis"><i class="fa fa-check"></i> Analyze</button>
+                    </div>
+                </h3>
+            </header>
+
+            <div class="flex-grid__body">
+                <nav class="flex-grid__nav" id="config-form">                 
+                    <header class="flex-form__header">
+                        <h4>
+                            <i class="fa fa-tasks"></i> Global Advanced Options
+                        </h4>
+                        <small>Options you change here are globally persisted to all files in your selection.</small>
+                    </header>
+                    <form class="flex-form" id="submission-config">
+                        <fieldset class="flex-form__module" id="network-routing"><legend class="flex-form__field-title">Network Routing <a href="#" target="_blank"><i class="fa fa-info-circle"></i></a></legend>
+
+                            <ul class="flex-form__toggle-group">
+                                    <li class=" ">
+                                            <input type="radio" name="network-routing" id="network-routing-none" value="none">
+                                            <label for="network-routing-none">
+                                                none
+                                            </label>
+                                    </li>
+                                    <li class=" disabled">
+                                            <input type="radio" name="network-routing" id="network-routing-drop" value="drop" disabled="">
+                                            <label for="network-routing-drop">
+                                                drop
+                                            </label>
+                                    </li>
+                                    <li class=" ">
+                                            <input type="radio" name="network-routing" id="network-routing-internet" value="internet" checked="">
+                                            <label for="network-routing-internet">
+                                                internet
+                                            </label>
+                                    </li>
+                                    <li class=" ">
+                                            <input type="radio" name="network-routing" id="network-routing-inetsim" value="inetsim">
+                                            <label for="network-routing-inetsim">
+                                                inetsim
+                                            </label>
+                                    </li>
+                                    <li class=" ">
+                                            <input type="radio" name="network-routing" id="network-routing-tor" value="tor">
+                                            <label for="network-routing-tor">
+                                                tor
+                                            </label>
+                                    </li>
+                            </ul>
+                            
+                                <div class="flex-form__select flex-form__select--horizontal disabled">
+                                    <label for="socks5" class="title">Socks5 via</label>
+                                    <select name="socks5" id="socks5" disabled="">
+                                        <option selected="" disabled="">Select</option>
+                                    </select>
+                                    <i class="fa fa-chevron-down"></i>
+                                </div>
+                            
+                        </fieldset>
+
+                        <div class="fieldset__split">
+                            <fieldset class="flex-form__module" id="package">
+                                <legend class="flex-form__field-title">Package <a href="#" target="_blank"><i class="fa fa-info-circle"></i></a></legend>
+                                <div class="flex-form__select">
+                                    <select name="package">
+                                        <option value="default">default</option>
+                                        <option value="app">app</option>
+                                        <option value="bash">bash</option>
+                                        <option value="com">com</option>
+                                        <option value="cpl">cpl</option>
+                                        <option value="dll">dll</option>
+                                        <option value="doc">doc</option>
+                                        <option value="docx">docx</option>
+                                        <option value="exe">exe</option>
+                                        <option value="generic">generic</option>
+                                        <option value="ie">ie</option>
+                                        <option value="ff">ff</option>
+                                        <option value="jar">jar</option>
+                                        <option value="js">js</option>
+                                        <option value="jse">jse</option>
+                                        <option value="jpg">jpg</option>
+                                        <option value="hta">hta</option>
+                                        <option value="hwp">hwp</option>
+                                        <option value="lnk">lnk</option>
+                                        <option value="macho">macho</option>
+                                        <option value="msi">msi</option>
+                                        <option value="msg">msg</option>
+                                        <option value="nsis">nsis</option>
+                                        <option value="outlook">outlook</option>
+                                        <option value="pdf">pdf</option>
+                                        <option value="perl">perl</option>
+                                        <option value="ppt">ppt</option>
+                                        <option value="ps1">ps1</option>
+                                        <option value="pub">pub</option>
+                                        <option value="python">python</option>
+                                        <option value="rar">rar</option>
+                                        <option value="regsvr">regsvr</option>
+                                        <option value="vbs">vbs</option>
+                                        <option value="wsf">wsf</option>
+                                        <option value="wget">wget</option>
+                                        <option value="xls">xls</option>
+                                        <option value="xlsx">xlsx</option>
+                                        <option value="zip">zip</option>
+                                        <option value="gz">gz</option>
+                                        <option value="7z">7z</option>
+                                        <option value="iso">iso</option>
+                                        <option value="sct">sct</option>
+                                    </select>
+                                    <i class="fa fa-chevron-down"></i>
+                                </div>
+                            </fieldset>
+                            <fieldset class="flex-form__module" id="priority">
+                                <legend class="flex-form__field-title">Priority </legend>
+                                <ul class="flex-form__toggle-group">
+                                    <li class=" ">
+                                        <input type="radio" name="priority" id="priority-1" value="1">
+                                        <label for="priority-1" class="priority-s">
+                                        low
+                                        </label>
+                                    </li>
+                                    <li class=" ">
+                                        <input type="radio" name="priority" id="priority-2" value="2" checked="">
+                                        <label for="priority-2" class="priority-m">
+                                        medium
+                                        </label>
+                                    </li>
+                                    <li class=" ">
+                                        <input type="radio" name="priority" id="priority-3" value="3">
+                                        <label for="priority-3" class="priority-l">
+                                        high
+                                        </label>
+                                    </li>
+                                </ul>
+                            </fieldset>
+                        </div>
+
+                        <fieldset class="flex-form__module" id="timeout">
+                            <legend class="flex-form__field-title">Timeout </legend>
+                            <ul class="flex-form__toggle-group">
+                               <li class="has-description ">
+                                  <input type="radio" name="timeout" id="timeout-60" value="60">
+                                  <label for="timeout-60">
+                                  short
+                                  <span class="description">60</span>
+                                  </label>
+                               </li>
+                               <li class="has-description ">
+                                  <input type="radio" name="timeout" id="timeout-120" value="120">
+                                  <label for="timeout-120">
+                                  medium
+                                  <span class="description">120</span>
+                                  </label>
+                               </li>
+                               <li class="has-description ">
+                                  <input type="radio" name="timeout" id="timeout-300" value="300">
+                                  <label for="timeout-300">
+                                  long
+                                  <span class="description">300</span>
+                                  </label>
+                               </li>
+                               <li class=" ">
+                                  <div class="manual-input active">
+                                     <input type="text" name="timeout" id="timeout-" value="" placeholder="...">
+                                     <span>seconds</span>
+                                  </div>
+                               </li>
+                            </ul>
+                         </fieldset>
+
+                         <fieldset class="flex-form__module" id="options">
+                            <legend class="flex-form__field-title">Options </legend>
+                            <ul class="flex-form__toggle-list">
+                               <li>
+                                  <p>Remote Control <span>Enables Guacamole UI for VM</span></p>
+                                  <label for="options-remote-control" class="flex-form__toggle-list-switch">
+                                  <input type="checkbox" id="options-remote-control" name="options" data-option="remote-control">
+                                  <span></span>
+                                  </label>
+                               </li>
+                               <li>
+                                  <p>Enable Injection <span>Enable behavioral analysis.</span></p>
+                                  <label for="options-enable-injection" class="flex-form__toggle-list-switch">
+                                  <input type="checkbox" id="options-enable-injection" name="options" checked="" data-option="enable-injection">
+                                  <span></span>
+                                  </label>
+                               </li>
+                               <li>
+                                  <p>Process Memory Dump </p>
+                                  <label for="options-process-memory-dump" class="flex-form__toggle-list-switch">
+                                  <input type="checkbox" id="options-process-memory-dump" name="options" checked="" data-option="process-memory-dump">
+                                  <span></span>
+                                  </label>
+                               </li>
+                               <li>
+                                  <p>Full Memory Dump <span>If Volatility has been enabled, process an entire VM memory dump with it.</span></p>
+                                  <label for="options-full-memory-dump" class="flex-form__toggle-list-switch">
+                                  <input type="checkbox" id="options-full-memory-dump" name="options" checked="" data-option="full-memory-dump">
+                                  <span></span>
+                                  </label>
+                               </li>
+                               <li>
+                                  <p>Enforce Timeout </p>
+                                  <label for="options-enforce-timeout" class="flex-form__toggle-list-switch">
+                                  <input type="checkbox" id="options-enforce-timeout" name="options" data-option="enforce-timeout">
+                                  <span></span>
+                                  </label>
+                               </li>
+                               <li>
+                                  <p>Enable Simulated Human Interaction <span>disable this feature for a better experience when using Remote Control</span></p>
+                                  <label for="options-simulated-human-interaction" class="flex-form__toggle-list-switch">
+                                  <input type="checkbox" id="options-simulated-human-interaction" name="options" checked="" data-option="simulated-human-interaction">
+                                  <span></span>
+                                  </label>
+                               </li>
+                               <li class="toggle-list-seperator">
+                                  <p>Extra options <span><a href="#" target="_blank">What can I use?</a></span></p>
+                               </li>
+                               <li class="flex-form__table extra-options">
+                                  <table>
+                                     <thead>
+                                        <tr>
+                                           <th>name</th>
+                                           <th>value</th>
+                                        </tr>
+                                     </thead>
+                                     <tfoot>
+                                        <tr>
+                                           <td><input type="text" placeholder="name" name="new-key"></td>
+                                           <td><input type="text" placeholder="value" name="new-value"></td>
+                                        </tr>
+                                     </tfoot>
+                                     <tbody></tbody>
+                                  </table>
+                               </li>
+                            </ul>
+                            <p class="description">To add a new option, type the option name + value and hit enter. it will add itself to the list. Remove an item by clicking the right remove icon.</p>
+                         </fieldset>
+
+                         <fieldset class="flex-form__module" id="machine">
+                            <legend class="flex-form__field-title">Machine </legend>
+                            <div class="flex-form__select">
+                               <select name="machine">
+                                  <option value="">default</option>
+                                  <option value="windows">windows</option>
+                                  <option value="linux">linux</option>
+                               </select>
+                               <i class="fa fa-chevron-down"></i>
+                            </div>
+                         </fieldset>
+
+                    </form>
+                </nav>
+
+                
+            </div>
+        </main>
+{% endblock %}

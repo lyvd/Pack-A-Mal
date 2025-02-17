@@ -1,0 +1,227 @@
+{% extends "package_analysis/layout.html" %}
+{%block header %}
+
+<script>
+     
+    // For displaying the number of commands, network connections, files, and system calls after scan completion
+    document.addEventListener("DOMContentLoaded", function() {
+        
+
+        var report_data = {{ reports|safe }};
+
+        // console.log(report_data);
+        var numCommands = document.getElementById("num-commands");
+        var numNetworkConnections = document.getElementById("num-network-connections");
+        var numFiles = document.getElementById("num-files");
+        var numSystemCalls = document.getElementById("num-system-calls");
+
+        if (report_data) {
+            var totalCommands = (report_data.install.num_commands || 0) + (report_data.execute.num_commands || 0);
+            var totalNetworkConnections = (report_data.install.num_network_connections || 0) + (report_data.execute.num_network_connections || 0);
+            var totalFiles = (report_data.install.num_files || 0) + (report_data.execute.num_files || 0);
+            var totalSystemCalls = (report_data.install.num_system_calls || 0) + (report_data.execute.num_system_calls || 0);
+
+            numCommands.innerHTML = `Install: ${report_data.install.num_commands || "N/A"}<br>Exec: ${report_data.execute.num_commands || "N/A"}<br>Total: ${totalCommands}`;
+            numNetworkConnections.innerHTML = `Install: ${report_data.install.num_network_connections || "N/A"}<br>Exec: ${report_data.execute.num_network_connections || "N/A"}<br>Total: ${totalNetworkConnections}`;
+            numFiles.innerHTML = `Install: ${report_data.install.num_files || "N/A"}<br>Execute: ${report_data.execute.num_files || "N/A"}<br>Total: ${totalFiles}`;
+            numSystemCalls.innerHTML = `Install: ${report_data.install.num_system_calls || "N/A"}<br>Exec: ${report_data.execute.num_system_calls || "N/A"}<br>Total: ${totalSystemCalls}`;
+
+
+            // information package_name, package_version, ecosystem display for id reports
+            var reports = document.getElementById("reports");
+            reports.innerHTML = `Package Name: <b> ${report_data.packages.package_name || "N/A"}</b> Package Version: <b>${report_data.packages.package_version || "N/A"}</b> Ecosystem: <b>${report_data.packages.ecosystem || "N/A"}</b>`;
+        }
+    });
+
+
+
+</script>
+
+{% endblock %}
+
+{% block body %}
+        <div id="cuckoo-dashboard" class="hidden"> </div>
+        <div class="flex-grid__horizontal--grow dashboard">
+            <div class="flex-grid__column dashboard__left">
+                <h2 class="dashboard__col-title">Malcontent</h2>
+                <div class="dashboard-module" data-dashboard-module="installation"> 
+                    <header class="dashboard-module__header">
+                        <h4>package-analysis-apk Installation</h4>
+                    </header>
+                    <section class="dashboard-module__body">
+                        <table class="simple">
+                            <tbody>
+                                <tr>
+                                    <td>Version</td>
+                                    <td>1.0.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+                <div class="dashboard-module">
+                    <header class="dashboard-module__header">
+                        <h4>Usage statistics</h4>
+                    </header>
+                    <section class="dashboard-module__body">
+                        <table class="simple">
+                            <tbody data-populate="statistics">
+                                <tr>
+                                    <td>Reported</td>
+                                    <td>5868258</td>
+                                </tr>
+                                <tr>
+                                    <td>Completed</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td>5909340</td>
+                                </tr>
+                                <tr>
+                                    <td>Running</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>Pending</td>
+                                    <td>0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+
+
+            </div>
+
+            <div class="flex-grid__column dashboard__right">
+                <h2 class="dashboard__col-title">package-analysis-apk</h2>
+                <div class="dashboard-module__lg" data-dashboard-module="upload">
+                    <div class="dashboard-module__body omni-uploader">
+                        <div class="dashboard-module__body--left">
+                            <div class="dndupload__v2" id="dndupload">
+                                <form id="uploader" action="" method="POST" enctype="multipart/form-data">
+                                    <div id="container">
+                                        <input type="file" name="files[]" id="file" class="holder_input" data-multiple-caption="{count} files selected" multiple="">
+                                        <label for="file" id="info">
+                                            <span class="text-idle">
+                                                <strong>Drag your file here or <em>click to select a file.</em></strong>
+                                            </span>
+                                            <span class="text-hovering">
+                                                <strong>Drop your file here.</strong>
+                                            </span>
+                                            <span class="text-dropped">
+                                                <strong>One moment, we're uploading!</strong>
+                                                <small>You'll be redirected automatically after we're done.</small>
+                                            </span>
+                                            <span class="text-done">
+                                                <strong>All good!</strong>
+                                                <small>One second while we redirect you.</small>
+                                            </span>
+                                            <span class="text-error">
+                                                <strong>Something went wrong!</strong>
+                                                <small>The server returned an error. Please check our file compatibility list with the file you're trying to upload or try again.</small>
+                                                <small>If the problem persists, send us a feedback report.</small>
+                                            </span> 
+                                        </label>
+                                        <button type="submit" class="holder_button">Upload</button>
+                                        <progress id="uploadprogress" min="0" max="100" value="0">0</progress>
+                                    </div>
+                                </form>
+                                <div class="alternate-progress"></div>
+                            </div>
+                        </div>
+                        <div class="dashboard-module__body--right">
+                            <div id="submit-with-link" >
+                                <form method="post" action="{% url 'dashboard' %}">
+                                    {% csrf_token %}
+                                    <!-- {{ form.as_p }}     -->
+                                      {{ form.package_name.label_tag }}
+                                      {{ form.package_name }}     
+                                      <br>                  
+                                    <div class="suggestions" id="suggestions"></div>
+                                    {{ form.package_version.label_tag }}
+                                    {{ form.package_version }}
+                                    <br>
+                                    {{ form.ecosystem.label_tag }}
+                                    {{ form.ecosystem }}
+                                    <br>
+                                    <div class="text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                                    </div>
+                                </form>
+                            
+                            </div>
+                            
+                        </div>
+
+                    </div>
+                    <div class="dashboard-module__footer">
+                        <p class="align-left"><i class="fa fa-info-circle"></i> Drag your file into the left field or click the icon to select a file.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-module" data-dashboard-module="system">
+                    <header class="dashboard-module__header">
+                        <h4 class="align-left clearfix">
+                            <div id="reports">Reports</div>    
+                            <div class="pull-right">
+                                <span class="label label-free">Commands</span>
+                                <span class="label label-used">Domains</span>
+                                <span class="label label-total">Syscalls</span>
+                            </div>
+                        </h4>
+                    </header>
+
+                    <section class="dashboard-module__body free-disk-space">
+                        <div class="dashboard-module__body--flex">
+                            <h5>Number of Commands</h5>
+                            <div class="free-disk-space__chart" id="ds-stat">
+                                <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
+                                <div class="free-disk-space__legend", id="num-commands">
+                                        
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-module__body--flex">
+                            <h5>Number of Network connections</h5>
+                            <div class="free-disk-space__chart" id="ds-stat">
+                                <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
+                                <div class="free-disk-space__legend" id="num-network-connections">
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-module__body--flex">
+                            <h5>Number of Files</h5>
+                            <div class="free-disk-space__chart" id="ds-stat">
+                                <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
+                                <div class="free-disk-space__legend" id="num-files">
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-module__body--flex">
+                            <h5>Number of System calls</h5>
+                            <div class="free-disk-space__chart" id="ds-stat">
+                                <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
+                                <div class="free-disk-space__legend" id="num-system-calls">
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+                </div>
+
+            </div>
+
+        </div>
+
+{% endblock %}
+
+

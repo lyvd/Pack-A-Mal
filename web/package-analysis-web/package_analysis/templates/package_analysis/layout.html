@@ -1,0 +1,106 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>package-analysis</title>
+        <link href="{% static 'styles_package_analysis.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'vendor.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'main.css' %}" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="{% static 'main.js' %}"></script>
+        <script src="{% static 'js/submit.js' %}"></script> 
+        <script src="{% static 'js/dashboard.js' %}"></script>  
+        {% block header %}
+        {% endblock %}
+       
+        <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const fileInput = document.getElementById('file');
+                    const uploaderArea = document.getElementById('dashboard-submit');
+                    const uploadProgress = document.getElementById('uploadprogress');
+                    const uploadIcon = document.querySelector('#dashboard-submit .fa-upload');
+                    const uploadTitle = document.querySelector('#dashboard-submit h5');
+
+                    fileInput.addEventListener('change', function() {
+                        if (fileInput.files.length > 0) {
+                            // Change CSS after file upload
+                            uploaderArea.style.backgroundColor = '#e0f7fa'; //  change background color
+                            uploaderArea.style.border = '2px solid #00796b'; //  change border
+                            uploadProgress.style.backgroundColor = '#4caf50'; // change progress bar color
+                            uploadProgress.style.height = '20px'; // change progress bar height
+                            uploadProgress.value = 100; //  set progress bar to 100%
+
+                            // Change icon and title
+                            uploadIcon.classList.remove('fa-upload');
+                            uploadIcon.classList.add('fa-check');
+                            uploadTitle.textContent = 'File Uploaded Successfully';
+                        }
+                    });
+                    
+                });
+
+
+            </script>
+    </head>
+    <body class="night">
+            <!-- class="night" -->
+    <!-- class="cyborg" -->
+        <nav class="app-nav" id="primary-nav">
+            <li class="active"><a title="Dashboard" href="{% url 'dashboard' %}"><i class="	fa fa-credit-card"></i> Dashboard</a></li>
+            <li><a href="#" title="Recent"><i class="fa fa-align-justify"></i> Recent</a></li>
+            <li><a href="#" title="Pending"><i class="fa fa-dot-circle-o"></i> Pending</a></li>
+            <li><a href="#" title="Search"><i class="fa fa-search"></i> Search</a></li>
+           
+        
+            <ul class="app-nav__nav--right">
+                <li>
+                    <!-- <a href="./submit.html" class="button outline"> -->
+                    <a href="{% url 'submit' %}" class="button outline">
+                        <span data-responsive="nav-expanded">Submit</span>
+                        <span data-responsive="nav-collapsed"><i class="fa fa-upload"></i></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="button outline">
+                        <span data-responsive="nav-expanded">Import</span>
+                        <span data-responsive="nav-collapsed"><i class="fa fa-download"></i></span>
+                    </a>
+                </li>
+                <li class="app-nav__dropdown--parent">
+                    <a href="#" id="select-theme">
+                        <i class="fa fa-paint-brush"></i>
+                    </a>
+                    <div class="app-nav__dropdown">
+                        <h5>Select theme</h5>
+                        <li><a id="theme-default" class="active" href="theme:default">Default</a></li>
+                        <li><a id="theme-cyborg" href="theme:cyborg">Cyborg</a></li>
+                        <li><a id="theme-night" href="theme:night">Night</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        
+        </nav>
+
+        
+
+
+    <div class="app">
+        {% block body %}
+        {% endblock %}
+
+    </div>
+
+
+
+
+    <footer>
+        <p class="text-center"><a href="/analysis/">Show all recent analyses</a></p>
+        <div class="container-fluid center">
+            <a href="#">Back to the top</a>
+        </div>
+    </footer>
+
+</body>
+<html>

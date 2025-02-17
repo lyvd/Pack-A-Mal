@@ -1,0 +1,166 @@
+{% extends "package_analysis/layout.html" %}
+{% block body %}
+        <div class="flex-nav">
+            <nav class="flex-nav__nav" id="analysis-nav">
+                <ul class="cuckoo-nav">
+                    <li class="cuckoo-nav__search">
+                        <div>
+                            <i class="fa fa-search"></i>
+                            <span><input type="text" name="sidebar_search" placeholder="Search" /></span>
+                            <button>Search</button>
+                        </div>
+                    </li>
+                    
+                    <li>
+                        <a href="#" class="active">
+                            <i class="fa fa-home"></i>
+                            <span>Summary</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#static-analysis.html">
+                            <i class="fa fa-book"></i>
+                            <span>Static Analysis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#extracted-artifacts.html">
+                            <i class="fa fa-pencil"></i>
+                            <span>Extracted Artifacts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#behavioral-analysis.html">
+                            <i class="fa fa-share-alt-square"></i>
+                            <span>Behavioral Analysis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#network-analysis.html">
+                            <i class="fa fa-globe"></i>
+                            <span>Network Analysis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#dropped-files.html">
+                            <i class="fa fa-file-code-o"></i>
+                            <span>Dropped Files</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#dropped-buffers.html">
+                            <i class="fa fa-server"></i>
+                            <span>Dropped Buffers</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#misp.html">
+                            <i class="fa fa-flag"></i>
+                            <span>MISP</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#process-memory.html">
+                            <i class="fa fa-qrcode"></i>
+                            <span>Process Memory</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#vm-memory-dump.html">
+                            <i class="fa fa-qrcode"></i>
+                            <span>VM Memory Dump</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#compare-analysis.html">
+                            <i class="fa fa-random"></i>
+                            <span>Compare Analysis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#export-analysis.html">
+                            <i class="fa fa-download"></i>
+                            <span>Export Analysis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#reboot-analysis.html">
+                            <i class="fa fa-power-off"></i>
+                            <span>Reboot Analysis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#options.html">
+                            <i class="fa fa-cogs"></i>
+                            <span>Options</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#feedback_form">
+                            <i class="fa fa-bug"></i>
+                            <span>Feedback</span>
+                        </a>
+                    </li>
+            
+                    <li class="lock-sidebar">
+                        <a href="sidebar:toggle-lock" title="Click to disable collapsing">
+                            <i class="fa"></i>
+                            <span></span>
+                        </a>
+                    </li>
+            
+                </ul>
+            </nav>
+            <section class="flex-nav__body cuckoo-analysis" tabindex="0">
+                            
+                <header class="page-header cuckoo-analysis__header">
+                    <h1>Summary </h1>
+                    <div class="header-right">
+                        <span class="file-name"><i class="fa fa-file-o"></i>
+                            wolfi-apk sample name
+                        </span>
+                    </div>
+                </header>
+
+                            
+                <table class="analysis-report">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Detection</th>
+                            <th>Severity</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>example1.apk</td>
+                            <td>Detected</td>
+                            <td>High</td>
+                            <td>Trojan</td>
+                            <td><a href="#details1">View Details</a></td>
+                        </tr>
+                        <tr>
+                            <td>example2.apk</td>
+                            <td>Not Detected</td>
+                            <td>Low</td>
+                            <td>Adware</td>
+                            <td><a href="#details2">View Details</a></td>
+                        </tr>
+                        <tr>
+                            <td>example3.apk</td>
+                            <td>Detected</td>
+                            <td>Medium</td>
+                            <td>Spyware</td>
+                            <td><a href="#details3">View Details</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </section>
+        </div>
+
+{% endblock %}
