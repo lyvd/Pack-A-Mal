@@ -123,7 +123,12 @@ class Helper:
             print(result.stdout)
 
             json_file_path = os.path.join("/tmp/results/", package_version + ".json")
-            read_command = f"wsl cat {json_file_path}"
+            
+            if Helper.is_windows_environment():
+                read_command = f"wsl cat {json_file_path}"
+            else:
+                read_command = f"cat {json_file_path}"
+
             json_result = subprocess.run(read_command, shell=True,
                                          check=True, capture_output=True,
                                          text=True, encoding='utf-8')
