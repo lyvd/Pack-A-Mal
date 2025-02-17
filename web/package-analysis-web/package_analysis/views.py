@@ -33,17 +33,17 @@ def dashboard(request):
 
 
 def upload(request):
-    print("request: ", request)
     if request.method == 'POST' and request.FILES['file']:
         file = request.FILES['file']
         fs = FileSystemStorage()
         filename = fs.save(file.name, file)
         uploaded_file_url = fs.url(filename)
-        # Helper.handle_uploaded_file(uploaded_file_url)
-        print("uploaded_file_url: ", uploaded_file_url)
-        return HttpResponse(uploaded_file_url   )
-    
-    return HttpResponse("Error")
+        reports = Helper.handle_uploaded_file(uploaded_file_url) 
+        form = PackageSubmitForm()
+        return render(request, 'package_analysis/dashboard.html', {'form': form, 'reports': reports})
+    else:
+        form = PackageSubmitForm()
+    return render(request, 'package_analysis/dashboard.html', {'form': form})
     
 
 def submit(request):

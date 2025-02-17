@@ -6,10 +6,9 @@ import os
 
 class Helper:
 
-    def find_script_path():
-        ''' Find scripts/analysis.sh path in the root directory of Pack-a-mal'''
-    
-        # This command to search the analysis script path in wsl environment
+    @staticmethod
+    def find_root_path():
+                # This command to search the analysis script path in wsl environment
         command_search_analysis_script = "wsl pwd"
 
         if Helper.is_windows_environment():
@@ -21,8 +20,16 @@ class Helper:
                                         text=True).stdout.strip()
         # back two directories to get the root directory of Pack-a-mal
         output_list = output_path.split("/")[:-2]
+        root_path = "/".join(output_list)
+        return root_path
+
+    @staticmethod
+    def find_script_path():
+        ''' Find scripts/analysis.sh path in the root directory of Pack-a-mal'''
+        root_path = Helper.find_root_path()
+
         # script path is the root directory of Pack-a-mal + scripts/run_analysis.sh
-        script_path = "/".join(output_list) + "/scripts/run_analysis.sh"
+        script_path = root_path + "/scripts/run_analysis.sh"
         return script_path
 
 
@@ -82,9 +89,11 @@ class Helper:
     
     @staticmethod
     def handle_uploaded_file(file_path):
-        package_name = file_path.split("\\")[-1].removesuffix(".apk")
-        package_version = package_name
-        return Helper.run_package_analysis(package_name, package_version, "wolfi", file_path)
+        # /media/listing-0_UwODAKy.1-r0.apk
+        local_path = Helper.find_root_path() + '/web/package-analysis-web' + file_path
+        package_name = file_path.split("/")[-1].split("-")[0]
+        package_version = file_path.split("/")[-1].split("-")[1].split(".apk")[0]
+        return Helper.run_package_analysis(package_name, package_version, "wolfi", local_path=local_path)
 
         
 
@@ -120,6 +129,7 @@ class Helper:
                 'package_version': package_version,
                 'ecosystem': ecosystem,
             }
+            # example of the reports to test the frontend
             # reports = {
 
             #     'packages': {

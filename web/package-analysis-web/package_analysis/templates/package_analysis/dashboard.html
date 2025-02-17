@@ -1,6 +1,108 @@
 {% extends "package_analysis/layout.html" %}
 {%block header %}
 
+<style>
+    /* General form styling */
+    .form-upload {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* Label styling */
+    .form-upload label {
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    /* Input field styling */
+    .form-upload input[type="file"] {
+        margin-bottom: 16px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Button styling */
+    .form-upload button[type="submit"] {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .form-upload button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+
+    /* Night mode styling */
+    body.night .form-upload {
+        background-color: #333;
+        color: #f9f9f9;
+    }
+
+    body.night .form-upload label {
+        color: #f9f9f9;
+    }
+
+    body.night .form-upload input[type="file"] {
+        border: 1px solid #555;
+        background-color: #444;
+        color: #f9f9f9;
+    }
+
+    body.night .form-upload button[type="submit"] {
+        background-color: #444;
+        color: #f9f9f9;
+    }
+
+    body.night .form-upload button[type="submit"]:hover {
+        background-color: #555;
+    }
+
+    /* Cyborg mode styling */
+    body.cyborg .form-upload {
+        background-color: #222;
+        color: #00ff00;
+    }
+
+    body.cyborg .form-upload label {
+        color: #00ff00;
+    }
+
+    body.cyborg .form-upload input[type="file"] {
+        border: 1px solid #00ff00;
+        background-color: #333;
+        color: #00ff00;
+    }
+
+    body.cyborg .form-upload button[type="submit"] {
+        background-color: #00ff00;
+        color: #222;
+    }
+
+    body.cyborg .form-upload button[type="submit"]:hover {
+        background-color: #00cc00;
+    }
+</style>
+
+
+
+
+</style>
+
 <script>
      
     // For displaying the number of commands, network connections, files, and system calls after scan completion
@@ -31,6 +133,33 @@
             var reports = document.getElementById("reports");
             reports.innerHTML = `Package Name: <b> ${report_data.packages.package_name || "N/A"}</b> Package Version: <b>${report_data.packages.package_version || "N/A"}</b> Ecosystem: <b>${report_data.packages.ecosystem || "N/A"}</b>`;
         }
+    });
+
+    document.getElementById('uploader').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var form = document.getElementById('uploader');
+        var formData = new FormData(form);
+
+        console.log('Uploading file...');
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                document.getElementById('info').classList.add('text-done');
+                return response.json();
+            } else {
+                document.getElementById('info').classList.add('text-error');
+                throw new Error('Network response was not ok.');
+            }
+        }).then(data => {
+            console.log('Success:', data);
+            // Redirect or handle success
+        }).catch(error => {
+            console.error('Error:', error);
+        });
     });
 
 
@@ -99,37 +228,14 @@
                 <div class="dashboard-module__lg" data-dashboard-module="upload">
                     <div class="dashboard-module__body omni-uploader">
                         <div class="dashboard-module__body--left">
-                            <div class="dndupload__v2" id="dndupload">
-                                <form id="uploader" action="" method="POST" enctype="multipart/form-data">
-                                    <div id="container">
-                                        <input type="file" name="files[]" id="file" class="holder_input" data-multiple-caption="{count} files selected" multiple="">
-                                        <label for="file" id="info">
-                                            <span class="text-idle">
-                                                <strong>Drag your file here or <em>click to select a file.</em></strong>
-                                            </span>
-                                            <span class="text-hovering">
-                                                <strong>Drop your file here.</strong>
-                                            </span>
-                                            <span class="text-dropped">
-                                                <strong>One moment, we're uploading!</strong>
-                                                <small>You'll be redirected automatically after we're done.</small>
-                                            </span>
-                                            <span class="text-done">
-                                                <strong>All good!</strong>
-                                                <small>One second while we redirect you.</small>
-                                            </span>
-                                            <span class="text-error">
-                                                <strong>Something went wrong!</strong>
-                                                <small>The server returned an error. Please check our file compatibility list with the file you're trying to upload or try again.</small>
-                                                <small>If the problem persists, send us a feedback report.</small>
-                                            </span> 
-                                        </label>
-                                        <button type="submit" class="holder_button">Upload</button>
-                                        <progress id="uploadprogress" min="0" max="100" value="0">0</progress>
-                                    </div>
-                                </form>
-                                <div class="alternate-progress"></div>
-                            </div>
+                            
+                            <form class="form-upload" action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <label for="file">Choose file to upload:</label>
+                                <input type="file" id="file" name="file" required>
+                                <br><br>
+                                <button type="submit">Upload</button>
+                            </form>
                         </div>
                         <div class="dashboard-module__body--right">
                             <div id="submit-with-link" >

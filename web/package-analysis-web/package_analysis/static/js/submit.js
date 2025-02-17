@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fileInput.addEventListener('change', function() {
         if (fileInput.files.length > 0) {
-
-            console.log('File uploaded');
             // Change CSS after file upload
             uploaderArea.style.backgroundColor = '#e0f7fa'; 
             uploaderArea.style.border = '2px solid #00796b'; 
