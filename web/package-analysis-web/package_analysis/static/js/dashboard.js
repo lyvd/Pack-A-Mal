@@ -1,6 +1,8 @@
 async function load() {
     try {
-        let response = await fetch('get_wolfis_packages');
+        let currentUrl = window.location.href;
+        currentUrl = currentUrl.split('/package-analysis')[0] + '/package-analysis';
+        let response = await fetch( `${currentUrl}/get_wolfis_packages`);
         let data = await response.json();
         return data.packages;
     } catch (error) {
