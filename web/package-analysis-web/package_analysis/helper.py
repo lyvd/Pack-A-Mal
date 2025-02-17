@@ -6,16 +6,30 @@ import os
 
 class Helper:
 
-    # This command to search the analysis script path in wsl environment
-    command_search_analysis_script = "wsl pwd"
-    output_path = subprocess.run(command_search_analysis_script, shell=True, check=True, capture_output=True, text=True).stdout.strip()
-    # back two directories to get the root directory of Pack-a-mal
-    output_list = output_path.split("/")[:-2]
-    # script path is the root directory of Pack-a-mal + scripts/run_analysis.sh
-    script_path = "/".join(output_list) + "/scripts/run_analysis.sh"
+    def find_script_path():
+        ''' Find scripts/analysis.sh path in the root directory of Pack-a-mal'''
+    
+        # This command to search the analysis script path in wsl environment
+        command_search_analysis_script = "wsl pwd"
+
+        if Helper.is_windows_environment():
+            command_search_analysis_script = "wsl pwd"
+        else:
+            command_search_analysis_script = "pwd"
+        output_path = subprocess.run(command_search_analysis_script,
+                                      shell=True, check=True, capture_output=True,
+                                        text=True).stdout.strip()
+        # back two directories to get the root directory of Pack-a-mal
+        output_list = output_path.split("/")[:-2]
+        # script path is the root directory of Pack-a-mal + scripts/run_analysis.sh
+        script_path = "/".join(output_list) + "/scripts/run_analysis.sh"
+        return script_path
 
 
-
+    @staticmethod
+    def is_windows_environment():
+        return os.name == 'nt'
+    
     @staticmethod
     def fetch_package_list():
         urls = [
@@ -81,11 +95,13 @@ class Helper:
         # run the script with the package name, version, ecosystem and the path to the apk
         # the script should return the results of the analysis
         # for now, just print the command to the console
+
+        script_path = Helper.find_script_path()
         if local_path:
-            command = f"wsl {Helper.script_path} -package {package_name} -version {package_version}  -mode dynamic -local {local_path} -nopull"
+            command = f"wsl {script_path} -package {package_name} -version {package_version}  -mode dynamic -local {local_path} -nopull"
             print(command)
         else:
-            command = f"wsl {Helper.script_path} -package {package_name} -version {package_version}  -mode dynamic -nopull"
+            command = f"wsl {script_path} -package {package_name} -version {package_version}  -mode dynamic -nopull"
 
         try:
             result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
@@ -160,14 +176,16 @@ class Report:
         results['install']['num_files'] = len(install_phase['Files'])
         results['install']['num_commands'] = len(install_phase['Commands'])
         results['install']['num_network_connections'] = len(install_phase['Sockets'])
-        results['install']['num_system_calls'] = len(install_phase['Syscalls'])
+        # for number of system calls divide by 2 because the system calls are 'enter' and 'exit' 
+        # so we need to divide by 2 to get the actual number of system calls
+        results['install']['num_system_calls'] = len(install_phase['Syscalls']) / 2
 
         execution_phase = json_data['Analysis']['execute']
 
         results['execute']['num_files'] = len(execution_phase['Files'])
         results['execute']['num_commands'] = len(execution_phase['Commands'])
         results['execute']['num_network_connections'] = len(execution_phase['Sockets'])
-        results['execute']['num_system_calls'] = len(execution_phase['Syscalls'])
+        results['execute']['num_system_calls'] = len(execution_phase['Syscalls']) / 2
 
         # print(results)
         return results

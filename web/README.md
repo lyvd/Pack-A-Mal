@@ -5,27 +5,23 @@
 ### Requirements
 - Django
 - requests
-- wsl on window or Linux os
-
-
-
-### some intersting code
-    [package-analysis scripts/analysis.sh](https://github.com/lyvd/Pack-A-Mal/blob/9ded033989132e563c63edb4414f1cf6fa0cc3aa/web/package-analysis-web/package_analysis/helper.py#L10)
+- WSL on Windows or Linux
 
 ## Usage
 
 ```bash
-cd Pack-A-Mal\web\package-analysis-web
+cd Pack-A-Mal/web/package-analysis-web
 python manage.py runserver
 ```
 
 Connect to [127.0.0.1:8000/package-analysis](http://127.0.0.1:8000/package-analysis)
 
-## demo
+## Demo
 
-Dash board when searching a package, it will display a list of package in wolfi registry
-![alt text](images/dashboard.png)
+Dashboard when searching for a package, it will display a list of packages in the Wolfi registry.
+![Dashboard](images/dashboard.png)
 
+After filling in the necessary information: package name, package version, and package ecosystem, the system will run the Pack-A-Mal tool to get the scan reports and display them in the dashboard interface.
 
-The scan results will display: number of executed command, number of access files, number of system  
-![alt text](images/results.png)
+The scan results will display: the number of executed commands, the number of accessed files, and the number of system calls.
+![Results](images/results.png)
