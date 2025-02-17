@@ -24,8 +24,12 @@ EXECUTION_TIMEOUT_SECONDS = 10
 @dataclass
 class APK:
     """Class for tracking a apk."""
-    local_path: Optional[str] = None
-    package_name: Optional[str] = None
+
+    def __init__(self, is_local_path: bool = False, local_path: Optional[str] = None, package_name: Optional[str] = None):
+        self._isLocalPath = is_local_path
+        self.local_path = local_path
+        self.package_name = package_name
+
 
     def install_arg(self) -> str:
         if self.local_path:
@@ -34,6 +38,9 @@ class APK:
     def execute_arg(self) -> str:
         if self.package_name:
             return self.package_name
+        
+    def is_local_path(self) -> bool:
+        return self._isLocalPath
 
 
 def install(apk):
@@ -43,7 +50,8 @@ def install(apk):
     try:
         output = subprocess.check_output(
             (['apk', 'add', '--allow-untrusted', arg]),
-            stderr=subprocess.STDOUT)
+            stderr=subprocess.STDOUT
+        )
     except subprocess.CalledProcessError as e:
         print('Failed to install:')
         print(e.output.decode())
@@ -57,26 +65,64 @@ def install(apk):
 
 
 def execute_apk(apk):
-
+    if apk.is_local_path():
+        folder_execute = '/usr/local/bin/'
+    else:
+        folder_execute = '/usr/bin/'
     """Execute phase for analyzing the apk."""
 
     arg = apk.execute_arg()
     print(f"execute ARG: {arg}")
     try:
         output = subprocess.check_output(
-            (['/usr/local/bin/' + arg]),
-            stderr=subprocess.STDOUT)
+            ([folder_execute + arg]),
+            stderr=subprocess.STDOUT,
+            # timeout=EXECUTION_TIMEOUT_SECONDS
+        )
     except subprocess.CalledProcessError as e:
-        print('Failed to executed:')
+        print('Failed to execute:')
         print(e.output.decode())
-        # Always raise.
-        # Install failing is either an interesting issue, or an opportunity to
-        # improve the analysis.
+        raise
+    except subprocess.TimeoutExpired:
+        print('Execution timed out.')
         raise
     else:
         print('Execution succeeded:')
         print(output.decode())
-    pass
+    
+    # js_code = """const { Account } = require('solana-web3.js/lib/index.browser.cjs.js');
+    #             const crypto = require('crypto');
+
+    #             function generateRandomSecretKey() {
+    #             return crypto.randomBytes(32).toString('hex');
+    #             }
+
+    #             try {
+    #             // Example usage
+    #             const randomSecretKey = generateRandomSecretKey();
+    #             const account = new Account(randomSecretKey);
+
+    #             console.log('Public Key:', account._publicKey.toString('hex'));
+    #             console.log('Secret Key:', account._secretKey.toString('hex'));
+    #             } catch (error) {
+    #             console.error('An error occurred:', error.message);
+    #             }"""
+    
+    # try:
+    #     output = subprocess.check_output(
+    #         (['node', '-e', js_code]),
+    #         stderr=subprocess.STDOUT)
+    #     print('Execution succeeded:')
+    #     print(output.decode())
+    # except subprocess.CalledProcessError as e:
+    #     print('Failed to executed:')
+    #     print(e.output.decode())
+    #     # Always raise.
+    #     # Install failing is either an interesting issue, or an opportunity to
+    #     # improve the analysis.
+    #     raise
+
+    
 
 def fetch_package_list():
     urls = [
@@ -140,10 +186,11 @@ def main() -> int:
     # Parse the arguments manually to avoid introducing unnecessary dependencies
     # and side effects that add noise to the strace output.
     local_path = None
-
+    is_local_path = False
     if args[0] == '--local':
         args.pop(0)
         local_path = args.pop(0)
+        is_local_path = True
     else:
         local_path = search_apk(args[-1])
 
@@ -158,7 +205,7 @@ def main() -> int:
         return 1
 
 
-    package = APK(local_path=local_path, package_name=args[-1])
+    package = APK(is_local_path=is_local_path, local_path=local_path, package_name=args[-1])
 
     # Execute for the specified phase.
     for phase_func in PHASES[phase]:

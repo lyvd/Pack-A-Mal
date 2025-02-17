@@ -6,8 +6,15 @@ import os
 
 class Helper:
 
+    # This command to search the analysis script path in wsl environment
+    command_search_analysis_script = "wsl pwd"
+    output_path = subprocess.run(command_search_analysis_script, shell=True, check=True, capture_output=True, text=True).stdout.strip()
+    # back two directories to get the root directory of Pack-a-mal
+    output_list = output_path.split("/")[:-2]
+    # script path is the root directory of Pack-a-mal + scripts/run_analysis.sh
+    script_path = "/".join(output_list) + "/scripts/run_analysis.sh"
 
-    script_path = "/mnt/d/HocTap/projectDrVuDucLy/tools/Pack-A-Mal/scripts/run_analysis.sh"
+
 
     @staticmethod
     def fetch_package_list():
