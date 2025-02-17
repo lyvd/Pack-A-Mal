@@ -4,6 +4,7 @@ import subprocess
 import json
 import os
 
+
 class Helper:
 
     @staticmethod
@@ -90,6 +91,7 @@ class Helper:
     @staticmethod
     def handle_uploaded_file(file_path):
         # /media/listing-0_UwODAKy.1-r0.apk
+
         local_path = Helper.find_root_path() + '/web/package-analysis-web' + file_path
         package_name = file_path.split("/")[-1].split("-")[0]
         package_version = file_path.split("/")[-1].split("-")[1].split(".apk")[0]
