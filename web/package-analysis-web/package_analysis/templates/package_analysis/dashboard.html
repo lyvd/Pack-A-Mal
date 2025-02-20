@@ -3,7 +3,7 @@
 
 <style>
     /* General form styling */
-    .form-upload {
+    .form-uploader {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -16,14 +16,14 @@
     }
 
     /* Label styling */
-    .form-upload label {
+    .form-uploader label {
         font-weight: bold;
         margin-bottom: 8px;
         color: #333;
     }
 
     /* Input field styling */
-    .form-upload input[type="file"] {
+    .form-uploader input[type="file"] {
         margin-bottom: 16px;
         padding: 8px;
         border: 1px solid #ccc;
@@ -33,7 +33,7 @@
     }
 
     /* Button styling */
-    .form-upload button[type="submit"] {
+    .form-uploader button[type="submit"] {
         background-color: #007bff;
         color: white;
         padding: 10px 20px;
@@ -43,58 +43,165 @@
         transition: background-color 0.3s ease;
     }
 
-    .form-upload button[type="submit"]:hover {
+    .form-uploader button[type="submit"]:hover {
         background-color: #0056b3;
     }
 
     /* Night mode styling */
-    body.night .form-upload {
+    body.night .form-uploader {
         background-color: #333;
         color: #f9f9f9;
     }
 
-    body.night .form-upload label {
+    body.night .form-uploader label {
         color: #f9f9f9;
     }
 
-    body.night .form-upload input[type="file"] {
+    body.night .form-uploader input[type="file"] {
         border: 1px solid #555;
         background-color: #444;
         color: #f9f9f9;
     }
 
-    body.night .form-upload button[type="submit"] {
+    body.night .form-uploader button[type="submit"] {
         background-color: #444;
         color: #f9f9f9;
     }
 
-    body.night .form-upload button[type="submit"]:hover {
+    body.night .form-uploader button[type="submit"]:hover {
         background-color: #555;
     }
 
     /* Cyborg mode styling */
-    body.cyborg .form-upload {
+    body.cyborg .form-uploader {
         background-color: #222;
         color: #00ff00;
     }
 
-    body.cyborg .form-upload label {
+    body.cyborg .form-uploader label {
         color: #00ff00;
     }
 
-    body.cyborg .form-upload input[type="file"] {
+    body.cyborg .form-uploader input[type="file"] {
         border: 1px solid #00ff00;
         background-color: #333;
         color: #00ff00;
     }
 
-    body.cyborg .form-upload button[type="submit"] {
+    body.cyborg .form-uploader button[type="submit"] {
         background-color: #00ff00;
         color: #222;
     }
 
-    body.cyborg .form-upload button[type="submit"]:hover {
+    body.cyborg .form-uploader button[type="submit"]:hover {
         background-color: #00cc00;
+    }
+
+
+    /*  lodaer during analysis*/
+    .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid blue;
+        border-bottom: 16px solid blue;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        display: None;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .popup {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Ensure the popup is on top */
+    
+    }
+
+    .popup-content {
+        background-color: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        max-height: 90%;
+        max-width: 90%;
+        overflow-y: auto;
+    }
+
+    .close {
+        cursor: pointer;
+        float: right;
+        font-size: 1.5em;
+    }
+
+    /* expandable for pop up */
+    .collapsible-section {
+        margin-top: 10px;
+    }
+
+    .toggle-btn {
+        background: none;
+        border: none;
+        color: #007bff;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 5px;
+        display: block;
+        text-align: left;
+    }
+
+    .collapsible-content {
+        display: none;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-top: 5px;
+    }
+
+    .collapsible-content.show {
+        display: block;
+    }
+
+    /* Night mode styling */
+    body.night .popup-content {
+        background-color: #333;
+        color: #f9f9f9;
+    }
+
+    body.night .collapsible-content {
+        background-color: #444;
+        border: 1px solid #555;
+    }
+
+    body.night .toggle-btn {
+        color: #f9f9f9;
+    }
+
+    /* Cyborg mode styling */
+    body.cyborg .popup-content {
+        background-color: #222;
+        color: #00ff00;
+    }
+
+    body.cyborg .collapsible-content {
+        background-color: #333;
+        border: 1px solid #00ff00;
+    }
+
+    body.cyborg .toggle-btn {
+        color: #00ff00;
     }
 </style>
 
@@ -102,12 +209,14 @@
 
 
 <script>
+
+    
      
     // For displaying the number of commands, network connections, files, and system calls after scan completion
-    document.addEventListener("DOMContentLoaded", function() {
+    function displayReport(reports) {
         
-
-        var report_data = {{ reports|safe }};
+        var report_data = reports;
+        
 
         // console.log(report_data);
         var numCommands = document.getElementById("num-commands");
@@ -133,9 +242,202 @@
                                  Package Version: <b>${report_data.packages.package_version || "N/A"}</b> 
                                  Ecosystem: <b>${report_data.packages.ecosystem || "N/A"}</b> 
                                  Time: <b>${(report_data.time || 0).toFixed(2)}</b> (seconds)`;
+
+            reports.innerHTML += `<span id="report-id" style="display: none;">${report_data.id}</span>`;
+
+        
         }
+    };
+
+    function submitForm() {
+        const form = document.getElementById('submitForm');
+        const formData = new FormData(form);
+
+        // Show the loader
+        document.getElementById('loader').style.display = 'block';
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') // Include CSRF token for security
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            // Handle success (e.g., update the UI with the response data)
+            displayReport(data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            // Handle error
+        })
+        .finally(() => {
+            // Hide the loader
+            document.getElementById('loader').style.display = 'none';
+        });
+    }
+
+    function uploadFile() {
+        const form = document.getElementById('upload-sample-form');
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        document.getElementById('loader').style.display = 'block';
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') // Include CSRF token for security
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            // Handle success (e.g., update the UI with the response data)
+            displayReport(data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            // Handle error
+        })
+        .finally(() => {
+            document.getElementById('loader').style.display = 'none';
+        });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        
+
+
+        const popup = document.getElementById('popup');
+        const closePopup = document.getElementById('closePopup');
+        const popupTitle = document.getElementById('popup-title');
+        const popupBody = document.getElementById('popup-body');
+
+        function openPopup(title, content) {
+            popupTitle.textContent = title;
+            popupBody.innerHTML = content;
+            popup.style.display = 'flex';
+        }
+
+        function fetchReportData(title) {
+
+            let currentReportIdElement = document.getElementById('report-id');
+            let currentReportId = currentReportIdElement ? currentReportIdElement.textContent : null;
+            let currentUrl = window.location.href;
+            currentUrl = currentUrl.split('/package-analysis')[0] + '/package-analysis';
+
+            if (!currentReportId) {
+                openPopup(title, 'No report data available.');
+                return;
+            }
+
+            fetch(`${currentUrl}/get_report/${currentReportId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    let content = '';
+                    if (title === 'Commands') {
+                        content = `<ul>${data.commands.map(command => `<li>${command}</li>`).join('')}</ul>`;
+                    } else if (title === 'Network Connections') {
+                        content = `
+                            <div class="collapsible-section">
+                                <button class="toggle-btn" onclick="toggleSection('ip-addresses')">IP Addresses</button>
+                                <div id="ip-addresses" class="collapsible-content">
+                                    <ul>${data.ips.map(ip => `<li>Address: ${ip.Address}, Port: ${ip.Port}</li>`).join('')}</ul>
+                                </div>
+                            </div>
+                            <div class="collapsible-section">
+                                <button class="toggle-btn" onclick="toggleSection('dns-queries')">Domains</button>
+                                <div id="dns-queries" class="collapsible-content">
+                                    <ul>${data.dns.map(domain => `<li>Domain: ${domain}</li>`).join('')}</ul>
+                                </div>
+                            </div>
+                        `;
+                    } else if (title === 'Files') {
+                        content = `
+                            <div class="collapsible-section">
+                                <button class="toggle-btn" onclick="toggleSection('files-read')">Files Read</button>
+                                <div id="files-read" class="collapsible-content">
+                                    <ul>${data.files.read.map(file => `<li>${file}</li>`).join('')}</ul>
+                                </div>
+                            </div>
+                            <div class="collapsible-section">
+                                <button class="toggle-btn" onclick="toggleSection('files-write')">Files Written</button>
+                                <div id="files-write" class="collapsible-content">
+                                    <ul>${data.files.write.map(file => `<li>${file}</li>`).join('')}</ul>
+                                </div>
+                            </div>
+                            <div class="collapsible-section">
+                                <button class="toggle-btn" onclick="toggleSection('files-delete')">Files Deleted</button>
+                                <div id="files-delete" class="collapsible-content">
+                                    <ul>${data.files.delete.map(file => `<li>${file}</li>`).join('')}</ul>
+                                </div>
+                            </div>
+                            `;
+                    } else if (title === 'System Calls') {
+                        content = `<ul>${data.syscalls.map(syscall => `<li>${syscall[0]}: ${syscall[1]}</li>`).join('')}</ul>`;
+                    }
+                    openPopup(title, content);
+                })
+                .catch(error => {
+                    console.error('Error fetching report data:', error);
+                    openPopup(title, 'Error fetching report data.');
+                    console.log('Request URL:', `${currentUrl}/get_report/${currentReportId}/`);
+                });
+        }
+
+        closePopup.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+
+        document.getElementById('executed-commands').addEventListener('click', () => {
+            fetchReportData( 'Commands');
+        });
+
+        document.getElementById('network-connections').addEventListener('click', () => {
+            fetchReportData('Network Connections');
+        });
+
+        document.getElementById('accessed-files').addEventListener('click', () => {
+            fetchReportData('Files');
+        });
+
+        document.getElementById('syscalls').addEventListener('click', () => {
+            fetchReportData( 'System Calls');
+        });
     });
 
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.classList.toggle('show');
+    }
 
 </script>
 
@@ -198,14 +500,15 @@
 
             <div class="flex-grid__column dashboard__right">
                 <h2 class="dashboard__col-title">package-analysis-apk</h2>
+                <div class="loader" id="loader"></div>
                 <div class="dashboard-module__lg" data-dashboard-module="upload">
                     <div class="dashboard-module__body omni-uploader">
                         <div class="dashboard-module__body--left">
                             
-                            <form class="form-upload" action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+                            <form class="form-uploader" id="upload-sample-form" onsubmit="event.preventDefault(); uploadFile();"  method="post" enctype="multipart/form-data" action="{% url 'upload_sample' %}">
                                 {% csrf_token %}
                                 <label for="file">Choose file to upload:</label>
-                                <input type="file" id="file" name="file" required>
+                                <input type="file" id="fileInput" name="file" required>
                                 <br><br>
                                 <button type="submit">Upload</button>
                             </form>
@@ -221,7 +524,7 @@
                         </div>
                         <div class="dashboard-module__body--right">
                             <div id="submit-with-link" >
-                                <form method="post" action="{% url 'dashboard' %}">
+                                <form id="submitForm" onsubmit="event.preventDefault(); submitForm();" method="post" action="{% url 'submit_sample' %}">
                                     {% csrf_token %}
                                     <!-- {{ form.as_p }}     -->
                                       {{ form.package_name.label_tag }}
@@ -262,7 +565,17 @@
                     </header>
 
                     <section class="dashboard-module__body free-disk-space">
-                        <div class="dashboard-module__body--flex">
+
+                        <div id="popup" class="popup">
+                            <div class="popup-content">
+                                <span id="closePopup" class="close">&times;</span>
+                                <h2 id="popup-title">Popup Title</h2>
+                                <div id="popup-body">Popup Content</div>
+                            </div>
+                        </div>
+
+
+                        <div class="dashboard-module__body--flex" id="executed-commands">
                             <h5>Number of Commands</h5>
                             <div class="free-disk-space__chart" id="ds-stat">
                                 <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
@@ -272,7 +585,7 @@
                             </div>
                         </div>
 
-                        <div class="dashboard-module__body--flex">
+                        <div class="dashboard-module__body--flex" id="network-connections">
                             <h5>Number of Network connections</h5>
                             <div class="free-disk-space__chart" id="ds-stat">
                                 <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
@@ -282,7 +595,7 @@
                             </div>
                         </div>
 
-                        <div class="dashboard-module__body--flex">
+                        <div class="dashboard-module__body--flex" id="accessed-files">
                             <h5>Number of Files</h5>
                             <div class="free-disk-space__chart" id="ds-stat">
                                 <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
@@ -292,7 +605,7 @@
                             </div>
                         </div>
 
-                        <div class="dashboard-module__body--flex">
+                        <div class="dashboard-module__body--flex" id="syscalls">
                             <h5>Number of System calls</h5>
                             <div class="free-disk-space__chart" id="ds-stat">
                                 <canvas style="display: block; height: 135px; width: 135px;" width="168" height="168"></canvas>
@@ -311,5 +624,4 @@
         </div>
 
 {% endblock %}
-
 

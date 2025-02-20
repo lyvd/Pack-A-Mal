@@ -4,6 +4,9 @@ import subprocess
 import json
 import os
 import time
+import re
+
+
 
 
 class Helper:
@@ -144,23 +147,41 @@ class Helper:
 
             # example of the reports to test the frontend
             # reports = {
-            #    'time': 0.0,
-            #     'packages': {
-            #         'package_name': "curl",
-            #         'package_version': "7.77.0",
-            #         'ecosystem': "wolfis",
-            #     }, 
+            #     'packages': {            
+            #         'package_name': package_name,
+            #         'package_version': package_version,
+            #         'ecosystem': ecosystem,
+            #     },
+            #     'time': 0.0,
             #     'install': {
             #         'num_files': 0,
             #         'num_commands': 0,
             #         'num_network_connections': 0,
             #         'num_system_calls': 0,
+            #         'files': {
+            #             'read': ['file1.txt', 'file2.txt'],
+            #             'write': ['file3.txt'],
+            #             'delete': ['file4.txt']
+            #         },
+            #         'dns': ['example.com', 'test.com'],
+            #         'ips': [{'Address': '192.168.1.1', 'Port': 80}],
+            #         'commands': ['ls', 'mkdir'],
+            #         'syscalls': ['open', 'close']  
             #     },
             #     'execute': {
             #         'num_files': 0,
             #         'num_commands': 0,
             #         'num_network_connections': 0,
             #         'num_system_calls': 0,
+            #         'files': {
+            #             'read': ['file2.txt', 'file5.txt'],
+            #             'write': ['file3.txt', 'file6.txt'],
+            #             'delete': ['file4.txt']
+            #         },
+            #         'dns': ['example.com', 'new.com'],
+            #         'ips': [{'Address': '192.168.1.1', 'Port': 80}, {'Address': '10.0.0.1', 'Port': 22}],
+            #         'commands': ['mkdir', 'rm'],
+            #         'syscalls': ['open', 'close']
             #     }
             # }
     
@@ -178,37 +199,115 @@ class Report:
     @staticmethod
     def generate_report(json_data):
         results = {
-
             'install': {
                 'num_files': 0,
                 'num_commands': 0,
                 'num_network_connections': 0,
                 'num_system_calls': 0,
+                'files': {
+                    'read': [],
+                    'write': [],
+                    'delete': [],
+                },
+                'dns': [],
+                'ips': [],
+                'commands': [],
+                'syscalls': []
             },
             'execute': {
                 'num_files': 0,
                 'num_commands': 0,
                 'num_network_connections': 0,
                 'num_system_calls': 0,
+                'files': {
+                    'read': [],
+                    'write': [],
+                    'delete': [],
+                },
+                'dns': [],
+                'ips': [],
+                'commands': [],
+                'syscalls': []
             }
         }
         # generate a report based on the data
         # for now, just print the data to the console
-        install_phase = json_data['Analysis']['install']
+        install_phase = json_data.get('Analysis', {}).get('install', {})
 
-        results['install']['num_files'] = len(install_phase['Files'])
-        results['install']['num_commands'] = len(install_phase['Commands'])
-        results['install']['num_network_connections'] = len(install_phase['Sockets'])
+        results['install']['num_files'] = len(install_phase.get('Files', []))
+        results['install']['num_commands'] = len(install_phase.get('Commands', []))
+        results['install']['num_network_connections'] = len(install_phase.get('Sockets', []))
         # for number of system calls divide by 2 because the system calls are 'enter' and 'exit' 
         # so we need to divide by 2 to get the actual number of system calls
-        results['install']['num_system_calls'] = len(install_phase['Syscalls']) / 2
+        results['install']['num_system_calls'] = len(install_phase.get('Syscalls', [])) // 2
 
-        execution_phase = json_data['Analysis']['execute']
+        for file in install_phase.get('Files', []):
+            if file.get('Read'):
+                results['install']['files']['read'].append(file.get('Path'))
+            if file.get('Write'):
+                results['install']['files']['write'].append(file.get('Path'))
+            if file.get('Delete'):
+                results['install']['files']['delete'].append(file.get('Path'))
 
-        results['execute']['num_files'] = len(execution_phase['Files'])
-        results['execute']['num_commands'] = len(execution_phase['Commands'])
-        results['execute']['num_network_connections'] = len(execution_phase['Sockets'])
-        results['execute']['num_system_calls'] = len(execution_phase['Syscalls']) / 2
+        for dns in install_phase.get('DNS', []):
+            if dns is not None:
+                for query in dns.get('Queries', []):
+                    results['install']['dns'].append(query.get('Hostname'))
+        
+        for socket in install_phase.get('Sockets', []):
+            if socket is not None:
+                results['install']['ips'].append({
+                    'Address': socket.get('Address'), 
+                    'Port': socket.get('Port')
+                })
+        
+        for command in install_phase.get('Commands', []):
+            if command is not None:
+                results['install']['commands'].append(command.get('Command'))
 
-        # print(results)
+        pattern = re.compile(r'^Exit:\s*([\w]+)')
+        for syscall in install_phase.get('Syscalls', []):
+            if syscall is not None:
+                match = pattern.match(syscall)
+                if match:
+                    results['install']['syscalls'].append(match.group(1))
+
+        execution_phase = json_data.get('Analysis', {}).get('execute', {})
+
+        results['execute']['num_files'] = len(execution_phase.get('Files', []))
+        results['execute']['num_commands'] = len(execution_phase.get('Commands', []))
+        results['execute']['num_network_connections'] = len(execution_phase.get('Sockets', []))
+        results['execute']['num_system_calls'] = len(execution_phase.get('Syscalls', [])) // 2
+
+        for file in execution_phase.get('Files', []):
+            if file.get('Read'):
+                results['execute']['files']['read'].append(file.get('Path'))
+            if file.get('Write'):
+                results['execute']['files']['write'].append(file.get('Path'))
+        for dns in execution_phase.get('DNS', []):
+            if dns is not None:
+                for query in dns.get('Queries', []):
+                    results['execute']['dns'].append(query.get('Hostname'))
+
+        for socket in execution_phase.get('Sockets', []):
+            if socket is not None:
+                results['execute']['ips'].append({
+                    'Address': socket.get('Address'), 
+                    'Port': socket.get('Port')
+                })
+        
+        for command in execution_phase.get('Commands', []):
+            if command is not None:
+                results['execute']['commands'].append(command.get('Command'))
+        
+        for command in execution_phase.get('Commands', []):
+            results['execute']['commands'].append(command.get('Command'))
+
+        pattern = re.compile(r'^Exit:\s*([\w]+)')
+        for syscall in execution_phase.get('Syscalls', []):
+            if syscall is not None:
+                match = pattern.match(syscall)
+                if match:
+                    results['execute']['syscalls'].append(match.group(1))
+        
         return results

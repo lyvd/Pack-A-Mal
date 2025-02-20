@@ -128,36 +128,24 @@
                 <table class="analysis-report">
                     <thead>
                         <tr>
-                            <th>File Name</th>
-                            <th>Detection</th>
-                            <th>Severity</th>
-                            <th>Type</th>
+                            <th>Sample Name</th>
+                            <th>Version</th>
+                            <th>Ecosystem</th>
+                            <th>Analyzed time</th>
                             <th>Details</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for package in packages %}
                         <tr>
-                            <td>example1.apk</td>
-                            <td>Detected</td>
-                            <td>High</td>
-                            <td>Trojan</td>
-                            <td><a href="#details1">View Details</a></td>
+                            <td>{{ package.package_name }}</td>
+                            <td>{{ package.package_version }}</td>
+                            <td>{{ package.ecosystem }}</td>
+                            <td>{{ package.report.time|floatformat:2 }}</td>
+                            <td><a href="{% url 'report' package.report.id %}">Details</a></td>
                         </tr>
-                        <tr>
-                            <td>example2.apk</td>
-                            <td>Not Detected</td>
-                            <td>Low</td>
-                            <td>Adware</td>
-                            <td><a href="#details2">View Details</a></td>
-                        </tr>
-                        <tr>
-                            <td>example3.apk</td>
-                            <td>Detected</td>
-                            <td>Medium</td>
-                            <td>Spyware</td>
-                            <td><a href="#details3">View Details</a></td>
-                        </tr>
-                    </tbody>
+                        {% endfor %}
+                        
                 </table>
 
             </section>

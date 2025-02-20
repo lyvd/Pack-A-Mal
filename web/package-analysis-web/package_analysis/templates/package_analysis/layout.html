@@ -9,7 +9,7 @@
         <link href="{% static 'main.css' %}" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="{% static 'main.js' %}"></script>
-        <script src="{% static 'js/submit.js' %}"></script> 
+        <!-- <script src="{% static 'js/submit.js' %}"></script>  -->
         <script src="{% static 'js/dashboard.js' %}"></script>  
         {% block header %}
         {% endblock %}
@@ -56,8 +56,8 @@
             <ul class="app-nav__nav--right">
                 <li>
                     <!-- <a href="./submit.html" class="button outline"> -->
-                    <a href="{% url 'submit' %}" class="button outline">
-                        <span data-responsive="nav-expanded">Submit</span>
+                    <a href="{% url 'analyzed_samples' %}" class="button outline">
+                        <span data-responsive="nav-expanded">Analyzed samples</span>
                         <span data-responsive="nav-collapsed"><i class="fa fa-upload"></i></span>
                     </a>
                 </li>
