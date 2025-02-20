@@ -234,12 +234,12 @@ class Report:
         # for now, just print the data to the console
         install_phase = json_data.get('Analysis', {}).get('install', {})
 
-        results['install']['num_files'] = len(install_phase.get('Files', []))
-        results['install']['num_commands'] = len(install_phase.get('Commands', []))
-        results['install']['num_network_connections'] = len(install_phase.get('Sockets', []))
+        results['install']['num_files'] = len(install_phase.get('Files') or [])
+        results['install']['num_commands'] = len(install_phase.get('Commands') or [])
+        results['install']['num_network_connections'] = len(install_phase.get('Sockets') or [])
         # for number of system calls divide by 2 because the system calls are 'enter' and 'exit' 
         # so we need to divide by 2 to get the actual number of system calls
-        results['install']['num_system_calls'] = len(install_phase.get('Syscalls', [])) // 2
+        results['install']['num_system_calls'] = len(install_phase.get('Syscalls') or []) // 2
 
         for file in install_phase.get('Files', []):
             if file.get('Read'):
