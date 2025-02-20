@@ -249,19 +249,19 @@ class Report:
             if file.get('Delete'):
                 results['install']['files']['delete'].append(file.get('Path'))
 
-        for dns in install_phase.get('DNS', []):
+        for dns in install_phase.get('DNS', []) or []:
             if dns is not None:
                 for query in dns.get('Queries', []):
                     results['install']['dns'].append(query.get('Hostname'))
         
-        for socket in install_phase.get('Sockets', []):
+        for socket in install_phase.get('Sockets', []) or []:
             if socket is not None:
                 results['install']['ips'].append({
                     'Address': socket.get('Address'), 
                     'Port': socket.get('Port')
                 })
         
-        for command in install_phase.get('Commands', []):
+        for command in install_phase.get('Commands', []) or []:
             if command is not None:
                 results['install']['commands'].append(command.get('Command'))
 
@@ -284,24 +284,24 @@ class Report:
                 results['execute']['files']['read'].append(file.get('Path'))
             if file.get('Write'):
                 results['execute']['files']['write'].append(file.get('Path'))
-        for dns in execution_phase.get('DNS', []):
+
+        for dns in execution_phase.get('DNS') or []:
             if dns is not None:
                 for query in dns.get('Queries', []):
                     results['execute']['dns'].append(query.get('Hostname'))
 
-        for socket in execution_phase.get('Sockets', []):
+        for socket in execution_phase.get('Sockets', []) or []:
             if socket is not None:
                 results['execute']['ips'].append({
                     'Address': socket.get('Address'), 
                     'Port': socket.get('Port')
                 })
         
-        for command in execution_phase.get('Commands', []):
+        for command in execution_phase.get('Commands', []) or []:
             if command is not None:
                 results['execute']['commands'].append(command.get('Command'))
         
-        for command in execution_phase.get('Commands', []):
-            results['execute']['commands'].append(command.get('Command'))
+
 
         pattern = re.compile(r'^Exit:\s*([\w]+)')
         for syscall in execution_phase.get('Syscalls', []):

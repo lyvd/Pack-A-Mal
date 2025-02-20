@@ -49,11 +49,11 @@ def submit_sample(request):
         form = PackageSubmitForm(request.POST)
         if form.is_valid():
             package_name = form.cleaned_data['package_name']
-            package_version = form.cleaned_data['package_version']
+            # package_version = form.cleaned_data['package_version']
             ecosystem = form.cleaned_data['ecosystem']
             package_name = package_name.removesuffix('.apk')
+            package_version = package_name
             # Process the form data (e.g., save to database, call an API, etc.)
-            # For now, just print the data to the console
             print(f"Package Name: {package_name}, Package Version: {package_version}, Ecosystem: {ecosystem}")
 
             reports = Helper.run_package_analysis(package_name, package_version, ecosystem)
@@ -103,7 +103,6 @@ def get_all_report(request):
     return JsonResponse(results)
 
 def get_report(request, report_id):
-    # report = Report.objects.get(pk=report_id)
     report = Report.objects.get(pk=report_id)
     results = {
         'package_name': report.package.package_name,
