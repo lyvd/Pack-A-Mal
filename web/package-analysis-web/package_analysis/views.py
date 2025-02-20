@@ -45,6 +45,8 @@ def dashboard(request):
     return render(request, 'package_analysis/dashboard.html', {'form': form})
 
 def submit_sample(request):
+    ''' Enter package name, version and ecosystem to analyze the package.
+      The package are already in the Wolfi registry''' 
     if request.method == 'POST':
         form = PackageSubmitForm(request.POST)
         if form.is_valid():
@@ -66,7 +68,7 @@ def submit_sample(request):
 
 
 def upload_sample(request):
-    
+    ''' Upload sample apk file and analysis it'''
     if request.method == 'POST' and request.FILES['file']:
         
         file = request.FILES['file']
@@ -85,6 +87,7 @@ def upload_sample(request):
 
 
 def report_detail(request, report_id):
+    '''Report detail analysis result of the package'''
     report = Report.objects.get(pk=report_id)
     return render(request, 'package_analysis/report_detail.html', {'report': report})
 
@@ -122,6 +125,7 @@ def get_report(request, report_id):
     return JsonResponse(results)
 
 def analyzed_samples(request):
+    '''List of analyzed samples, sorted by id'''
 
     packages = Package.objects.all().order_by('-id')
 
