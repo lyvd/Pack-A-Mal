@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Optional
 from unittest.mock import MagicMock
 import requests
+import tarfile
 
 
 APK_EXTENSION = '.apk'
@@ -27,9 +28,16 @@ class APK:
 
     def __init__(self, is_local_path: bool = False, local_path: Optional[str] = None, package_name: Optional[str] = None):
         self._isLocalPath = is_local_path
-        self.local_path = local_path
-        self.package_name = package_name
+        self._local_path = local_path
+        self._package_name = package_name
 
+    @property
+    def local_path(self) -> Optional[str]:
+        return self._local_path
+    
+    @property
+    def package_name(self) -> Optional[str]:
+        return self._package_name
 
     def install_arg(self) -> str:
         if self.local_path:
@@ -65,62 +73,83 @@ def install(apk):
 
 
 def execute_apk(apk):
-    if apk.is_local_path():
-        folder_execute = '/usr/local/bin/'
+    if not apk.execute_arg().startswith('solana_web3.js'):
+        
+        if apk.is_local_path():
+            folder_execute = '/usr/local/bin/'
+            arg = apk.execute_arg()
+        else:
+            folder_execute = '/usr/bin/'
+            apk_path = apk.local_path 
+
+            parent_dir = os.path.dirname(apk_path)
+            # Extract the .tar file
+            with tarfile.open(apk_path, 'r:gz') as tar:
+                tar.extractall(path=parent_dir)
+
+            # List files in /usr/bin and get the filename only
+            
+            files = os.listdir(os.path.join(parent_dir, 'usr/bin'))
+            file_name = files[-1]
+            arg = file_name
+            if not arg:
+                raise FileNotFoundError("No APK file found in /usr/bin")
+
+
+        """Execute phase for analyzing the apk."""
+
+        
+        print(f"execute ARG: {arg}")
+        try:
+            output = subprocess.check_output(
+                ([folder_execute + arg]),
+                stderr=subprocess.STDOUT,
+                # timeout=EXECUTION_TIMEOUT_SECONDS
+            )
+        except subprocess.CalledProcessError as e:
+            print('Failed to execute:')
+            print(e.output.decode())
+            raise
+        except subprocess.TimeoutExpired:
+            print('Execution timed out.')
+            raise
+        else:
+            print('Execution succeeded:')
+            print(output.decode())
+
     else:
-        folder_execute = '/usr/bin/'
-    """Execute phase for analyzing the apk."""
-
-    arg = apk.execute_arg()
-    print(f"execute ARG: {arg}")
-    try:
-        output = subprocess.check_output(
-            ([folder_execute + arg]),
-            stderr=subprocess.STDOUT,
-            # timeout=EXECUTION_TIMEOUT_SECONDS
-        )
-    except subprocess.CalledProcessError as e:
-        print('Failed to execute:')
-        print(e.output.decode())
-        raise
-    except subprocess.TimeoutExpired:
-        print('Execution timed out.')
-        raise
-    else:
-        print('Execution succeeded:')
-        print(output.decode())
     
-    # js_code = """const { Account } = require('solana-web3.js/lib/index.browser.cjs.js');
-    #             const crypto = require('crypto');
+        js_code = """const { Account } = require('solana-web3.js/lib/index.browser.cjs.js');
+                    const crypto = require('crypto');
 
-    #             function generateRandomSecretKey() {
-    #             return crypto.randomBytes(32).toString('hex');
-    #             }
+                    function generateRandomSecretKey() {
+                    return crypto.randomBytes(32).toString('hex');
+                    }
 
-    #             try {
-    #             // Example usage
-    #             const randomSecretKey = generateRandomSecretKey();
-    #             const account = new Account(randomSecretKey);
+                    try {
+                    // Example usage
+                    const randomSecretKey = generateRandomSecretKey();
+                    const account = new Account(randomSecretKey);
 
-    #             console.log('Public Key:', account._publicKey.toString('hex'));
-    #             console.log('Secret Key:', account._secretKey.toString('hex'));
-    #             } catch (error) {
-    #             console.error('An error occurred:', error.message);
-    #             }"""
-    
-    # try:
-    #     output = subprocess.check_output(
-    #         (['node', '-e', js_code]),
-    #         stderr=subprocess.STDOUT)
-    #     print('Execution succeeded:')
-    #     print(output.decode())
-    # except subprocess.CalledProcessError as e:
-    #     print('Failed to executed:')
-    #     print(e.output.decode())
-    #     # Always raise.
-    #     # Install failing is either an interesting issue, or an opportunity to
-    #     # improve the analysis.
-    #     raise
+                    console.log('Public Key:', account._publicKey.toString('hex'));
+                    console.log('Secret Key:', account._secretKey.toString('hex'));
+                    } catch (error) {
+                    console.error('An error occurred:', error.message);
+                    }"""
+        
+        try:
+            output = subprocess.check_output(
+                (['node', '-e', js_code]),
+                stderr=subprocess.STDOUT)
+            print('Execution succeeded:')
+            print(output.decode())
+        except subprocess.CalledProcessError as e:
+            print('Failed to executed:')
+            print(e.output.decode())
+            # Always raise.
+            # Install failing is either an interesting issue, or an opportunity to
+            # improve the analysis.
+            raise
 
     
 
