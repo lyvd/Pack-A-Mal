@@ -238,12 +238,14 @@
 
             // information package_name, package_version, ecosystem display for id reports
             var reports = document.getElementById("reports");
-            reports.innerHTML = `Package Name: <b>${report_data.packages.package_name || "N/A"}</b> 
-                                 Package Version: <b>${report_data.packages.package_version || "N/A"}</b> 
+            reports.innerHTML = `Name: <b>${report_data.packages.package_name || "N/A"}</b> 
+                                 Version: <b>${report_data.packages.package_version || "N/A"}</b> 
                                  Ecosystem: <b>${report_data.packages.ecosystem || "N/A"}</b> 
                                  Time: <b>${(report_data.time || 0).toFixed(2)}</b> (seconds)`;
 
             reports.innerHTML += `<span id="report-id" style="display: none;">${report_data.id}</span>`;
+            document.getElementById('report-id-detail').href = `/package-analysis/report/${report_data.id}/`;
+            document.getElementById('report-id-detail').style.display = 'inline';
 
         
         }
@@ -518,7 +520,7 @@
                                 <h4>Supported file types:</h4>
 
                                 <ul>
-                                    <li>APK <i class="fa fa-file-archive"></i></li>
+                                    <li>Wolfi APK <i class="fa fa-file-archive"></i></li>
                                 </ul>
                             </div>
                         </div>
@@ -557,9 +559,9 @@
                         <h4 class="align-left clearfix">
                             <div id="reports">Reports</div>    
                             <div class="pull-right">
-                                <span class="label label-free">Commands</span>
-                                <span class="label label-used">Domains</span>
-                                <span class="label label-total">Syscalls</span>
+                                <!-- <span class="label label-free">Commands</span>
+                                <span class="label label-used">Domains</span> -->
+                                <a id="report-id-detail" href="" class="label label-used" style="display: none;">Detail</a>
                             </div>
                         </h4>
                     </header>
