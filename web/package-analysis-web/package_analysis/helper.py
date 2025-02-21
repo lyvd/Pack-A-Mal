@@ -258,14 +258,16 @@ class Report:
             if socket is not None:
                 results['install']['ips'].append({
                     'Address': socket.get('Address'), 
-                    'Port': socket.get('Port')
+                    'Port': socket.get('Port'),
+                    'Hostnames': ' '.join(socket.get('Hostnames') or [])
                 })
         
         for command in install_phase.get('Commands', []) or []:
             if command is not None:
                 results['install']['commands'].append(command.get('Command'))
 
-        pattern = re.compile(r'^Exit:\s*([\w]+)')
+        # pattern = re.compile(r'^Enter:\s*([\w]+)')
+        pattern = re.compile(r'^Enter:\s*(.*)')
         for syscall in install_phase.get('Syscalls', []):
             if syscall is not None:
                 match = pattern.match(syscall)
@@ -294,7 +296,8 @@ class Report:
             if socket is not None:
                 results['execute']['ips'].append({
                     'Address': socket.get('Address'), 
-                    'Port': socket.get('Port')
+                    'Port': socket.get('Port'),
+                    'Hostnames': ' '.join(socket.get('Hostnames') or [])
                 })
         
         for command in execution_phase.get('Commands', []) or []:
@@ -303,7 +306,8 @@ class Report:
         
 
 
-        pattern = re.compile(r'^Exit:\s*([\w]+)')
+        # pattern = re.compile(r'^Enter:\s*([\w]+)')
+        pattern = re.compile(r'^Enter:\s*(.*)')
         for syscall in execution_phase.get('Syscalls', []):
             if syscall is not None:
                 match = pattern.match(syscall)

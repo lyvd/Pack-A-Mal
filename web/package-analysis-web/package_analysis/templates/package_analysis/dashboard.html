@@ -398,7 +398,14 @@
                             </div>
                             `;
                     } else if (title === 'System Calls') {
-                        content = `<ul>${data.syscalls.map(syscall => `<li>${syscall[0]}: ${syscall[1]}</li>`).join('')}</ul>`;
+                        content = `
+                            <div class="collapsible-section">
+                                <button class="toggle-btn" onclick="toggleSection('syscalls')">System Calls</button>
+                                <div id="syscalls" class="collapsible-content">
+                                    <ul>${data.syscalls.map(syscall => `<li>${syscall[0]} : ${syscall[1]}</li>`).join('')}</ul>
+                                </div>
+                            </div>
+                        `;
                     }
                     openPopup(title, content);
                 })

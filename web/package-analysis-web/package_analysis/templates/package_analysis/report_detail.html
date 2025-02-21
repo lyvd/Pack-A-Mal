@@ -152,7 +152,7 @@
     <h2>IP Connections</h2>
     <ul>
         {% for ip in report.ips %}
-            <li>Address: {{ ip.Address }}, Port: {{ ip.Port }}</li>
+            <li><strong>Address:</strong> {{ ip.Address }}, <strong>Port:</strong> {{ ip.Port }}{% if ip.Hostnames %}, <strong>Hostname:</strong> {{ ip.Hostnames }}{% endif %}</li>
         {% empty %}
             <li>No IP connections</li>
         {% endfor %}
@@ -171,7 +171,7 @@
     <div class="collapsible">
         <ul>
             {% for syscall, count in report.syscalls %}
-                <li>{{ syscall }}: {{ count }}</li>
+                <li>{{ syscall }} : {{ count }}</li>
             {% endfor %}
         </ul>
     </div>
